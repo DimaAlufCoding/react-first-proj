@@ -21,7 +21,7 @@ function query(filterBy = {}) {
             if (!filterBy) return books
             const { title, maxPrice } = filterBy
             return books.filter(book => {
-                return book.title.includes(title) && book.listPrice.amount < maxPrice
+                return book.title.includes(title) 
             })
         })
 }
