@@ -73,7 +73,7 @@ function _createBooks(){
 
 function _createBook(title, amount) {
     return {
-        _id: makeId(),
+        id: makeId(),
         title,
         listPrice: {
             amount,

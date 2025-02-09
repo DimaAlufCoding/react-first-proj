@@ -7,6 +7,7 @@ export function BookIndex() {
 
     const [books, setBooks] = useState(null)
     const [filterBy, setFilterBy] = useState(bookService.getDefaultFilter())
+    const [selectedBook, setSelectedBook] = useState(null)
 
 
 
@@ -27,6 +28,11 @@ export function BookIndex() {
     if(!books) return <div>Loading...</div>
 
 
+    function onSelectBook(bookId) {
+        const book = books.find(book => book.id === bookId)
+        setSelectedBook(book)
+
+    }
     return (
         <section className="book-index">
             <h1>Book Index</h1>
