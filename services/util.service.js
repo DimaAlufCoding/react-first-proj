@@ -34,3 +34,7 @@ export function loadFromStorage(key) {
     const data = localStorage.getItem(key)
     return (data) ? JSON.parse(data) : undefined
 }
+
+export function capitalizeTitle(title) {
+    return title.charAt(0).toUpperCase() + title.slice(1)
+}

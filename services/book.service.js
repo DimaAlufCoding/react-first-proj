@@ -532,7 +532,7 @@ function _createBooks() {
 function _createBookFromData(book) {
     return {
         id: book.id || utilService.makeId(),
-        title: book.title || "Untitled",
+        title: utilService.capitalizeTitle(book.title || "Untitled"),
         subtitle: book.subtitle || utilService.makeLorem(15),
         authors: book.authors || ["Unknown"],
         publishedDate: book.publishedDate || utilService.getRandomInt(1700, 2022),
@@ -546,7 +546,7 @@ function _createBookFromData(book) {
             currencyCode: (book.listPrice && book.listPrice.currencyCode) ? book.listPrice.currencyCode : "USD",
             isOnSale: (book.listPrice && book.listPrice.isOnSale) ? book.listPrice.isOnSale : false
         }
-    };
+    }
 }
 
 
