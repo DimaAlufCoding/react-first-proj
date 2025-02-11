@@ -1,10 +1,16 @@
+const { useState } = React
+const Router = ReactRouterDOM.HashRouter
+const { Routes, Route } = ReactRouterDOM
+
+
+
 import { Home } from "./pages/Home.jsx"
 import { About } from "./pages/About.jsx"
 import { BookIndex } from "./pages/BookIndex.jsx"
 import { AppHeader } from "./cmps/AppHeader.jsx"
 
 
-const { useState } = React
+
 
 export function App() {
 
@@ -15,18 +21,21 @@ export function App() {
     }
 
     return (
-        <section className="app">
+        <Router>
+            <section className="app">
 
-            <header className="app-header main-layout">
                 <AppHeader onSetPage={onSetPage} />
-            </header>
 
-            <main className="main-layout">
-                {currPage === 'home' && <Home />}
-                {currPage === 'about' && <About />}
-                {currPage === 'bookIndex' && <BookIndex />}
-            </main>
-            
-        </section>
+
+                <main className="main-layout">
+                    <Routes>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/about" element={<About />} />
+                        <Route path="/bookIndex" element={<BookIndex />} />
+                    </Routes>
+                </main>
+
+            </section>
+        </Router>
     )
 }
