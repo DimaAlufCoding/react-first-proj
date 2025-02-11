@@ -1,24 +1,29 @@
 const { useState, useEffect } = React
 
-export function BookFilter({ filterBy, onSetFilterBy }) {
-    const [filterByToEdit, setFilterByToEdit] = useState({ ...filterBy })
+export function BookFilter({ onSetFilterBy,filterBy }) {
+    const [filterByToEdit, setFilterByToEdit] = useState(filterBy)
+    
 
     useEffect(() => {
         onSetFilterBy(filterByToEdit)
     }, [filterByToEdit])
 
     function onHandleChange({ target }) {
-        console.log('target:', target)
+        // console.log('target:', target)
 		const field = target.name
 		const value = target.type === 'number' ? +target.value : target.value
-		setFilterByToEdit(prevFilter => ({ ...prevFilter, [field]: value }))
-	}
+        // console.log('field:', field)
+        // console.log('value:', value)
 
-    const { title, amount } = filterByToEdit
+		
+        setFilterByToEdit(prevFilter => ({ ...prevFilter, [field]: value }))
+	}
+    // console.log('filterByToEdit:', filterByToEdit)
+    const { title, price } = filterByToEdit
 
 
     function onSubmitForm(ev) {
-        ev.preventDefault();
+        ev.preventDefault()
         onSetFilterBy(filterByToEdit)
     }
 
@@ -36,13 +41,14 @@ export function BookFilter({ filterBy, onSetFilterBy }) {
                     id="txt" 
                 />
 
-                <label htmlFor="num">Price</label>
+                <label htmlFor="amount">Price</label>
                 <input 
-                    name="price" 
-                    value={amount || ''} 
-                    onChange={onHandleChange} 
                     type="number" 
-                    id="num" 
+                    name="price"
+                    value={price || ''} 
+                    onChange={onHandleChange} 
+                    id="price" 
+                    
                 />
 
                 <button>Submit</button>
