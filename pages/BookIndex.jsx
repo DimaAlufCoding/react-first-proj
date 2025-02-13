@@ -2,6 +2,7 @@ import { bookService } from '../services/book.service.js'
 import { BookList } from '../cmps/BookList.jsx'
 import { BookDetails } from './BookDetails.jsx'
 import { BookFilter } from '../cmps/BookFilter.jsx'
+import {BookEdit} from './BookEdit.jsx'
 
 
 const { useEffect, useState } = React
@@ -46,6 +47,7 @@ export function BookIndex() {
     return (
         <section className="book-index">
             <BookFilter filterBy={filterBy} onSetFilterBy={onSetFilterBy} />
+            <Link to="/bookIndex/edit">Add New Book</Link>
             <BookList
                 books={books}
                 onRemoveBook={onRemoveBook}

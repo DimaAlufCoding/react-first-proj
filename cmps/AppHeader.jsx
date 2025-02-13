@@ -7,7 +7,7 @@ export function AppHeader({ onSetPage }) {
             <nav className="app-nav">
                 <NavLink to="/">Home</NavLink>
                 <NavLink to="/about">About</NavLink>
-                <NavLink to="/bookIndex">Cars</NavLink>
+                <NavLink to="/bookIndex">Books</NavLink>
             </nav>
         </header>
     )
