@@ -10,7 +10,6 @@ export function BookIndex() {
 
     const [books, setBooks] = useState(null)
     const [filterBy, setFilterBy] = useState(bookService.getDefaultFilter())
-    const [selectedBookId, setSelectedBookId] = useState(null)
 
 
 
@@ -27,10 +26,7 @@ export function BookIndex() {
             })
     }
 
-    function onSetSelectedBookId(bookId) {
-        const book = books.find(book => book.id === bookId)
-        setSelectedBookId(book)
-    }
+ 
 
     function onRemoveBook(bookId) {
         bookService.remove(bookId)
@@ -49,22 +45,11 @@ export function BookIndex() {
 
     return (
         <section className="book-index">
-            {selectedBookId ?
-                <BookDetails
-
-                    book={selectedBookId}
-                    onBack={() => setSelectedBookId(null)}
-                />
-                : <React.Fragment>
-                    <BookFilter filterBy={filterBy} onSetFilterBy={onSetFilterBy} />
-                    <BookList
-                        books={books}
-                        onSetSelectedBookId={onSetSelectedBookId}
-                        onRemoveBook={onRemoveBook}
-                    />
-                </React.Fragment>
-            }
-
+            <BookFilter filterBy={filterBy} onSetFilterBy={onSetFilterBy} />
+            <BookList
+                books={books}
+                onRemoveBook={onRemoveBook}
+            />
         </section>
     )
 }

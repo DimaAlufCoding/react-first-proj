@@ -8,23 +8,20 @@ import { Home } from "./pages/Home.jsx"
 import { About } from "./pages/About.jsx"
 import { BookIndex } from "./pages/BookIndex.jsx"
 import { AppHeader } from "./cmps/AppHeader.jsx"
+import { BookDetails } from "./pages/BookDetails.jsx"
 
 
 
 
 export function App() {
 
-    const [currPage, setCurrPage] = useState('home')
 
-    function onSetPage(page) {
-        setCurrPage(page)
-    }
 
     return (
         <Router>
             <section className="app">
 
-                <AppHeader onSetPage={onSetPage} />
+                <AppHeader />
 
 
                 <main className="main-layout">
@@ -32,6 +29,8 @@ export function App() {
                         <Route path="/" element={<Home />} />
                         <Route path="/about" element={<About />} />
                         <Route path="/bookIndex" element={<BookIndex />} />
+                        <Route path="/bookIndex/:bookId" element={<BookDetails />} />
+
                     </Routes>
                 </main>
 

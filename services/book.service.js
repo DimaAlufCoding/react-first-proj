@@ -455,6 +455,7 @@ export const bookService = {
     save,
     getEmptyBook,
     getDefaultFilter,
+    getNextBookId,
 }
 
 
@@ -476,6 +477,7 @@ function query(filterBy = {}) {
             return books
         })
 }
+
 function _saveBooksToStorage() {
     storageService.save(BOOK_KEY, gBooks)
 }
@@ -489,16 +491,16 @@ function remove(bookId) {
 }
 
 function save(book) {
-    return book._id ? 
-    storageService.put(BOOK_KEY, book) : 
-    storageService.post(BOOK_KEY, book)
+    return book._id ?
+        storageService.put(BOOK_KEY, book) :
+        storageService.post(BOOK_KEY, book)
 }
 
 function getEmptyBook(title = '', amount = 0) {
     return {
         title,
         listPrice: {
-            amount ,
+            amount,
             currencyCode: 'USD',
             isOnSale: false
         },
@@ -511,6 +513,16 @@ function getDefaultFilter() {
         price: 0
     }
 }
+
+function getNextBookId(bookId) {
+    return storageService.query(BOOK_KEY)
+        .then(books => {
+            const idx = books.findIndex(book => book.id === bookId)
+            if (idx === -1 || idx === books.length - 1) return null // No next book
+            return books[idx + 1].id
+        })
+}
+
 
 function _createBooks() {
     let books = loadFromStorage(BOOK_KEY)

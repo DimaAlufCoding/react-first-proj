@@ -3,9 +3,37 @@ import { LongTxt } from '../cmps/LongTxt.jsx';
 
 
 const { useEffect, useState } = React
+const { useParams, useNavigate, Link } = ReactRouterDOM
 
-export function BookDetails({ book, onBack }) {
-    console.log('book', book)
+
+export function BookDetails() {
+
+    const [book, setBook] = useState(null)
+    const [nextBookId, setNextBookId] = useState(null)
+
+
+
+    const params = useParams()
+    console.log('params:', params)
+
+    useEffect(() => {
+        bookService.getNextBookId(params.bookId)
+            .then(setNextBookId)
+    }, [params.bookId])
+
+
+    useEffect(() => {
+        loadBook()
+    }, [params.bookId])
+
+
+    function loadBook(){
+        bookService.getById(params.bookId)
+        .then(setBook)
+        .catch(err => {
+            console.log('BookDetails: err in loadBook', err)
+        })
+    }
 
     if (!book) return 'Loading...'
 
@@ -20,7 +48,7 @@ export function BookDetails({ book, onBack }) {
         listPrice,
         pageCount,
         publishedDate,
-        
+
     } = book
 
 
@@ -41,6 +69,7 @@ export function BookDetails({ book, onBack }) {
 
         if (listPrice.amount < 20) return { color: "green", padding: "5px" }
     }
+
 
     return (
         <section className="book-details">
@@ -66,7 +95,10 @@ export function BookDetails({ book, onBack }) {
                 <img src={thumbnail} />
             </div>
             <div className="buttons">
-                <button onClick={onBack}>Back</button>
+                <button><Link to="/bookIndex">Back</Link></button>
+                <button>
+                    {nextBookId && <Link to={`/bookIndex/${nextBookId}`}>Next Book</Link>}
+                </button>
                 <button onClick={() => bookService.addReview(book.id)}>Add Review</button>
             </div>
 
