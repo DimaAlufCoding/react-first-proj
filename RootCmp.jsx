@@ -31,8 +31,8 @@ export function App() {
                         <Route path="/about" element={<About />} />
                         <Route path="/bookIndex" element={<BookIndex />} />
                         <Route path="/bookIndex/:bookId" element={<BookDetails />} />
-                        <Route path="/bookIndex/edit/:bookId" element={<BookEdit />} />
                         <Route path="/bookIndex/edit" element={<BookEdit />} />
+                        <Route path="/bookIndex/edit/:bookId" element={<BookEdit />} />
 
                     </Routes>
                 </main>

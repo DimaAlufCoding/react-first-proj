@@ -1,4 +1,6 @@
 import { bookService } from "../services/book.service.js";
+import { showErrorMsg } from '../services/event-bus.service.js'
+import { showSuccessMsg } from '../services/event-bus.service.js'
 
 const { useEffect, useState } = React
 const { useParams, useNavigate, Link } = ReactRouterDOM
@@ -8,70 +10,123 @@ export function BookEdit() {
     console.log('bookToEdit:', bookToEdit)
 
 
-    const { bookId } = useParams()
-    console.log('bookId:', bookId)
+    const params = useParams()
+    const navigate = useNavigate()
+    console.log('params bookId:', params.bookId)
 
 
     useEffect(() => {
-        if (bookId) loadBook()
+        if (!params.bookId) return
+        loadBook()
     }, [])
 
 
     function loadBook() {
-        bookService.getById(bookId)
+        bookService.getById(params.bookId)
             .then(setBookToEdit)
-            .catch(err => {
-                console.log('BookDetails: err in loadBook', err)
-            })
+            
     }
 
 
-    function onSubmitForm(ev) {
+    function handleChange({ target }) {
+        const { type, name: prop } = target
+        let { value } = target
+
+        switch (type) {
+            case 'range':
+            case 'number':
+                value = +value
+                break;
+
+            case 'checkbox':
+                value = target.checked
+                break;
+        }
+        setBookToEdit(prevBook => ({ ...prevBook, [prop]: value }))
+    }
+
+
+
+    function handleChangeListPrice({ target }) {
+        const { type, name: prop } = target
+        let { value } = target
+
+        switch (type) {
+            case 'range':
+            case 'number':
+                value = +value
+                break;
+
+            case 'checkbox':
+                value = target.checked
+                break;
+        }
+
+        setBookToEdit(prevBook => ({
+            ...prevBook,
+            listPrice: { ...prevBook.listPrice, [prop]: value }
+        }))
+    }
+
+
+    const { title, authors, listPrice, description, pageCount } = bookToEdit
+
+
+    function onSave(ev) {
         ev.preventDefault()
 
         bookService.save(bookToEdit)
-            .then(savedBook => {
-                console.log('savedBook:', savedBook)
-                navigate('/bookIndex')
-            })
-            .catch(err => console.log('err:', err))
-    }
+            .then(() => showSuccessMsg('Book has successfully saved!'))
+            .catch(() => showErrorMsg(`couldn't save book`))
+            .finally(() => navigate('/bookIndex'))
 
-
-    function onHandleChange({ target }) {
-        // console.log('target:', target)
-        const field = target.name
-        const value = target.type === 'number' ? +target.value : target.value
-        // console.log('field:', field)
-        // console.log('value:', value)
-        setBookToEdit(prevFilter => ({ ...prevFilter, [field]: value }))
 
     }
-
-
-    const { title, price } = bookToEdit
 
     return (
         <section className="book-edit">
-            <h1>{bookId ? 'Book Edit' : 'Book Add '}</h1>
-
-            <form onSubmit={onSubmitForm}>
+            <h2>{params.bookId ? 'Book Edit' : 'Book Add '}</h2>
+            
+            <form onSubmit={onSave}>
                 <label htmlFor="txt">Book Name</label>
                 <input
                     name="title"
                     value={title || ''}
-                    onChange={onHandleChange}
+                    onChange={handleChange}
                     type="text"
                     id="txt"
                 />
-
-                <label htmlFor="amount">Price</label>
+                <label htmlFor="authors">Authors</label>
                 <input
+                    name="authors"
+                    value={authors || ''}
+                    onChange={handleChange}
+                    type="text"
+                    id="authors" />
+
+                <label htmlFor="description">Description</label>
+                <textarea
+                    name="description"
+                    value={description || ''}
+                    onChange={handleChange}
+                    id="description" />
+
+                <label htmlFor="pageCount">Page Count</label>
+                <input
+                    name="pageCount"
+                    value={pageCount || ''}
+                    onChange={handleChange}
                     type="number"
-                    name="price"
-                    value={price || ''}
-                    onChange={onHandleChange}
+                    id="pageCount" />
+
+
+                <label htmlFor="price">Price</label>
+                <input
                     id="price"
+                    type="number"
+                    name="amount"
+                    value={listPrice.amount}
+                    onChange={handleChangeListPrice}
                 />
                 <button>Save</button>
 

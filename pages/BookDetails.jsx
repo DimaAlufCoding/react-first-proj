@@ -86,7 +86,8 @@ export function BookDetails() {
                 </span>
 
                 <span>Description :</span>
-                <LongTxt txt={description} />
+                <LongTxt txt={description || ''} />
+
 
             </div>
 
