@@ -2,7 +2,6 @@ import { StarRating } from "./dynamic-inputs/StarRating.jsx"
 import { SelectRating } from "./dynamic-inputs/SelectRating.jsx"
 import { NumInputRating } from "./dynamic-inputs/NumInputRating.jsx"
 import {reviewService} from '../services/review.service.js'
-import { reviewService } from '../../services/review.service.js';
 
 const { useState, useRef, useEffect } = React
 
@@ -66,8 +65,8 @@ export function AddReview({ onSaveReview, toggleReview }) {
                     <input name='rating' onChange={onChangeCmpType} id='stars' type="radio" value='stars' />
                 </div>
 
-                {cmpType === 'select' && <SelectRating handleChange={handleChange} rating={rating} />}
-                {cmpType === 'numInput' && <NumInputRating handleChange={handleChange} rating={rating} />}
+                {/* {cmpType === 'select' && <SelectRating handleChange={handleChange} rating={rating} />} */}
+                {/* {cmpType === 'numInput' && <NumInputRating handleChange={handleChange} rating={rating} />} */}
                 {cmpType === 'stars' && <StarRating handleChange={handleChange} rating={rating} />}
 
                 <textarea name='txt' cols='30' rows='10' value={txt} onChange={handleChange}></textarea>

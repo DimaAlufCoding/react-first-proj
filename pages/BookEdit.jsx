@@ -1,3 +1,4 @@
+import { AddGoogleBook } from '../cmps/AddGoogleBook.jsx';
 import { bookService } from "../services/book.service.js";
 import { showErrorMsg } from '../services/event-bus.service.js'
 import { showSuccessMsg } from '../services/event-bus.service.js'
@@ -86,6 +87,8 @@ export function BookEdit() {
     return (
         <section className="book-edit">
             <h2>{params.bookId ? 'Book Edit' : 'Book Add '}</h2>
+
+            {!params.bookId && <AddGoogleBook />}
             
             <form onSubmit={onSave}>
                 <label htmlFor="txt">Book Name</label>

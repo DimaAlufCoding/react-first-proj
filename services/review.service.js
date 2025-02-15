@@ -1,4 +1,4 @@
-import { booksService } from './books.service.js'
+import { booksService } from './book.service.js'
 import { utilService } from './util.service.js'
 
 export const reviewService = {

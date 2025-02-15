@@ -1,3 +1,8 @@
+
+const { useState, useEffect } = React
+const { useParams, useNavigate } = ReactRouter
+const { Link } = ReactRouterDOM
+
 import { bookService } from '../services/book.service.js'
 import { LongTxt } from '../cmps/LongTxt.jsx';
 import { AddReview } from '../cmps/AddReview.jsx';
@@ -5,20 +10,12 @@ import { reviewService } from "../services/review.service.js";
 
 
 
-
-
-const { useEffect, useState } = React
-const { useParams, useNavigate, Link } = ReactRouterDOM
-
-
 export function BookDetails() {
-    console.log('AddReview:', AddReview);
-
+    console.log('AddReview:', AddReview)
 
     const [book, setBook] = useState(null)
     const [nextBookId, setNextBookId] = useState(null)
     const [isLoadingReview, setIsLoadingReview] = useState(false)
-
     const [isShowReviewModal, setIsShowReviewModal] = useState(false)
 
 
