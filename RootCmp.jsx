@@ -10,6 +10,7 @@ import { BookIndex } from "./pages/BookIndex.jsx"
 import { AppHeader } from "./cmps/AppHeader.jsx"
 import { BookDetails } from "./pages/BookDetails.jsx"
 import { BookEdit } from "./pages/BookEdit.jsx"
+import { UserMsg } from "./cmps/UserMsg.jsx"
 
 
 
@@ -36,7 +37,7 @@ export function App() {
 
                     </Routes>
                 </main>
-
+                <UserMsg />
             </section>
         </Router>
     )
