@@ -62,3 +62,10 @@
 .book-details-image {
     justify-self: center;
 }
+
+
+.brake-line {
+    height: 2px;
+    background: black;
+    width: 100%;
+}

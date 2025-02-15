@@ -1,5 +1,10 @@
 import { bookService } from '../services/book.service.js'
 import { LongTxt } from '../cmps/LongTxt.jsx';
+import { AddReview } from '../cmps/AddReview.jsx';
+import { reviewService } from "../services/review.service.js";
+
+
+
 
 
 const { useEffect, useState } = React
@@ -7,9 +12,15 @@ const { useParams, useNavigate, Link } = ReactRouterDOM
 
 
 export function BookDetails() {
+    console.log('AddReview:', AddReview);
+
 
     const [book, setBook] = useState(null)
     const [nextBookId, setNextBookId] = useState(null)
+    const [isLoadingReview, setIsLoadingReview] = useState(false)
+
+    const [isShowReviewModal, setIsShowReviewModal] = useState(false)
+
 
 
 
@@ -27,12 +38,12 @@ export function BookDetails() {
     }, [params.bookId])
 
 
-    function loadBook(){
+    function loadBook() {
         bookService.getById(params.bookId)
-        .then(setBook)
-        .catch(err => {
-            console.log('BookDetails: err in loadBook', err)
-        })
+            .then(setBook)
+            .catch(err => {
+                console.log('BookDetails: err in loadBook', err)
+            })
     }
 
     if (!book) return 'Loading...'
@@ -69,7 +80,33 @@ export function BookDetails() {
 
         if (listPrice.amount < 20) return { color: "green", padding: "5px" }
     }
+    function onToggleReviewModal() {
+        setIsShowReviewModal((prevIsReviewModal) => !prevIsReviewModal)
+    }
 
+    function onSaveReview(reviewToAdd) {
+        setIsLoadingReview(true)
+        reviewService.saveReview(book.id, reviewToAdd)
+            .then((review => {
+                setBook(prevBook => {
+                    const reviews = [review, ...prevBook.reviews]
+                    return { ...prevBook, reviews }
+                })
+            }))
+            .catch(() => showErrorMsg(`Review to ${book.title} Failed!`))
+            .finally(() => setIsLoadingReview(false))
+    }
+    function onRemoveReview(reviewId) {
+        setIsLoadingReview(true)
+        reviewService.removeReview(book.id, reviewId)
+            .then(() => {
+                setBook(prevBook => {
+                    const filteredReviews = prevBook.reviews.filter(review => review.id !== reviewId)
+                    return { ...prevBook, reviews: filteredReviews }
+                })
+            })
+            .finally(() => setIsLoadingReview(false))
+    }
 
     return (
         <section className="book-details">
@@ -87,9 +124,16 @@ export function BookDetails() {
 
                 <span>Description :</span>
                 <LongTxt txt={description || ''} />
-
-
+                <hr className='brake-line' />
+                <button onClick={onToggleReviewModal}>Add Review</button>
+                {isShowReviewModal && (
+                    <AddReview
+                        toggleReview={onToggleReviewModal}
+                        onSaveReview={onSaveReview}
+                    />
+                )}
             </div>
+
 
 
             <div className="book-details-image">
@@ -100,7 +144,9 @@ export function BookDetails() {
                 <button>
                     {nextBookId && <Link to={`/bookIndex/${nextBookId}`}>Next Book</Link>}
                 </button>
-                <button onClick={() => bookService.addReview(book.id)}>Add Review</button>
+
+
+
             </div>
 
         </section>
