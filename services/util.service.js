@@ -38,3 +38,13 @@ export function loadFromStorage(key) {
 export function capitalizeTitle(title) {
     return title.charAt(0).toUpperCase() + title.slice(1)
 }
+
+export function debounce(callback, wait) {
+    let timeoutId = null;
+    return (...args) => {
+        window.clearTimeout(timeoutId);
+        timeoutId = window.setTimeout(() => {
+            callback(...args);
+        }, wait);
+    };
+}

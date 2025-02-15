@@ -4,6 +4,7 @@ import { storageService } from './async-storage.service.js'
 
 const BOOK_KEY = 'bookDB'
 
+
 var gBooks = [{
     "id": "OXeMG8wNskc",
     "title": "metus hendrerit",
@@ -446,6 +447,8 @@ var gBooks = [{
 }
 ]
 _createBooks()
+const CACHE_STORAGE_KEY = 'googleBooksCache'
+const gCache = utilService.loadFromStorage(CACHE_STORAGE_KEY) || {}
 
 
 export const bookService = {
@@ -456,6 +459,8 @@ export const bookService = {
     getEmptyBook,
     getDefaultFilter,
     getNextBookId,
+    getGoogleBooks,
+    addGoogleBook,
 }
 
 
@@ -476,6 +481,54 @@ function query(filterBy = {}) {
             }
             return books
         })
+}
+function getGoogleBooks(bookName) { // tyg
+    if (bookName === '') return Promise.resolve()
+    const googleBooks = gCache[bookName]
+    if (googleBooks) {
+        console.log('data from storage...', googleBooks)
+        return Promise.resolve(googleBooks)
+    }
+
+    const url = `https://www.googleapis.com/books/v1/volumes?printType=books&q=${bookName}`
+    return axios.get(url)
+        .then(res => {
+            const data = res.data.items
+            console.log('data from network...', data)
+            const books = _formatGoogleBooks(data)
+            gCache[bookName] = books
+            utilService.saveToStorage(CACHE_STORAGE_KEY, gCache)
+            return books
+        })
+}
+
+function _formatGoogleBooks(googleBooks) {
+    return googleBooks.map(googleBook => {
+        const { volumeInfo } = googleBook
+        const book = {
+            id: googleBook.id,
+            title: volumeInfo.title,
+            description: volumeInfo.description,
+            pageCount: volumeInfo.pageCount,
+            authors: volumeInfo.authors,
+            categories: volumeInfo.categories,
+            publishedDate: volumeInfo.publishedDate,
+            language: volumeInfo.language,
+            listPrice: {
+                amount: utilService.getRandomIntInclusive(80, 500),
+                currencyCode: "EUR",
+                isOnSale: Math.random() > 0.7
+            },
+            reviews: []
+        }
+        if (volumeInfo.imageLinks) book.thumbnail = volumeInfo.imageLinks.thumbnail
+        return book
+    })
+}
+
+
+function addGoogleBook(book) {
+    return storageService.post(BOOK_KEY, book, false)
 }
 
 function _saveBooksToStorage() {
