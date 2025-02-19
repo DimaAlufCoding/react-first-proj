@@ -1,4 +1,4 @@
-import { booksService } from './book.service.js'
+import { bookService } from './book.service.js'
 import { utilService } from './util.service.js'
 
 export const reviewService = {
@@ -7,23 +7,39 @@ export const reviewService = {
     getEmptyReview
 }
 
-window.bs = booksService
+window.bs = bookService
 
 function saveReview(bookId, reviewToSave) {
-    return booksService.get(bookId)
+    console.log('Review to Save BEFORE creating review:', reviewToSave);
+    console.log('Book ID:', bookId);
+
+    return bookService.getById(bookId)
         .then(book => {
-            const review = _createReview(reviewToSave)
-            book.reviews.unshift(review)
-            return booksService.save(book).then(() => review)
+            if (!book.reviews) book.reviews = []; // Ensure reviews array exists
+
+            if (!reviewToSave || typeof reviewToSave !== "object") {
+                console.error("Invalid review data:", reviewToSave);
+                throw new Error("Review data is invalid or missing.");
+            }
+
+            const review = _createReview(reviewToSave);
+            book.reviews.unshift(review);
+
+            return bookService.save(book).then(() => review);
         })
+        .catch(err => {
+            console.error("Error saving review:", err);
+            throw err;
+        });
 }
 
+
 function removeReview(bookId, reviewId) {
-    return booksService.get(bookId)
+    return bookService.get(bookId)
         .then(book => {
             const newReviews = book.reviews.filter((review) => review.id !== reviewId)
             book.reviews = newReviews
-            return booksService.save(book)
+            return bookService.save(book)
         })
 }
 
@@ -40,6 +56,7 @@ function getEmptyReview() {
 // ~~~~~~~~~~~~~~~~LOCAL FUNCTIONS~~~~~~~~~~~~~~~~~~~
 
 function _createReview(reviewToSave) {
+    console.log('reviewToSave:', reviewToSave)
     return {
         id: utilService.makeId(),
         ...reviewToSave,

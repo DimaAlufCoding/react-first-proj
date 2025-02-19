@@ -1,9 +1,11 @@
+const { useState, useRef, useEffect } = React
+
+
 import { StarRating } from "./dynamic-inputs/StarRating.jsx"
 import { SelectRating } from "./dynamic-inputs/SelectRating.jsx"
 import { NumInputRating } from "./dynamic-inputs/NumInputRating.jsx"
-import {reviewService} from '../services/review.service.js'
+import { reviewService } from '../services/review.service.js'
 
-const { useState, useRef, useEffect } = React
 
 export function AddReview({ onSaveReview, toggleReview }) {
     console.log('AddReview')
@@ -15,7 +17,8 @@ export function AddReview({ onSaveReview, toggleReview }) {
     const inputRef = useRef()
 
     useEffect(() => {
-        inputRef.current.focus()
+        if (inputRef.current)
+            inputRef.current.focus()
     }, [])
 
     function onSubmitForm(ev) {
@@ -54,21 +57,9 @@ export function AddReview({ onSaveReview, toggleReview }) {
                 <input type='date' id='date' name='date' value={date} onChange={handleChange} />
 
                 <div className='rate-by-choice'>
-                    <p className='bold-txt'>Select rating type:</p>
-                    <label htmlFor="select">Select</label>
-                    <input name='rating' onChange={onChangeCmpType} id='select' type="radio" value='select' />
-
-                    <label htmlFor="numInput">Number Input</label>
-                    <input name='rating' onChange={onChangeCmpType} id='numInput' type="radio" value='numInput' />
-
-                    <label htmlFor="stars">Stars</label>
-                    <input name='rating' onChange={onChangeCmpType} id='stars' type="radio" value='stars' />
+                    <p className='bold-txt'>Select rating</p>
+                    {cmpType === 'stars' && <StarRating handleChange={handleChange} rating={rating} />}
                 </div>
-
-                {/* {cmpType === 'select' && <SelectRating handleChange={handleChange} rating={rating} />} */}
-                {/* {cmpType === 'numInput' && <NumInputRating handleChange={handleChange} rating={rating} />} */}
-                {cmpType === 'stars' && <StarRating handleChange={handleChange} rating={rating} />}
-
                 <textarea name='txt' cols='30' rows='10' value={txt} onChange={handleChange}></textarea>
 
                 <button>Save</button>
@@ -76,4 +67,7 @@ export function AddReview({ onSaveReview, toggleReview }) {
         </form>
 
     </section>
+
+
+
 }

@@ -1,108 +1,93 @@
+const { useState, useEffect } = React;
+const { useParams } = ReactRouter;
+const { Link } = ReactRouterDOM;
 
-const { useState, useEffect } = React
-const { useParams, useNavigate } = ReactRouter
-const { Link } = ReactRouterDOM
-
-import { bookService } from '../services/book.service.js'
-import { LongTxt } from '../cmps/LongTxt.jsx';
-import { AddReview } from '../cmps/AddReview.jsx';
+import { bookService } from '../services/book.service.js';
 import { reviewService } from "../services/review.service.js";
 
-
+import { LongTxt } from '../cmps/LongTxt.jsx';
+import { AddReview } from '../cmps/AddReview.jsx';
+import { ReviewList } from "../cmps/ReviewList.jsx";
 
 export function BookDetails() {
-    console.log('AddReview:', AddReview)
+    const [book, setBook] = useState(null);
+    const [nextBookId, setNextBookId] = useState(null);
+    const [isLoadingReview, setIsLoadingReview] = useState(false);
+    const [isShowReviewModal, setIsShowReviewModal] = useState(false);
 
-    const [book, setBook] = useState(null)
-    const [nextBookId, setNextBookId] = useState(null)
-    const [isLoadingReview, setIsLoadingReview] = useState(false)
-    const [isShowReviewModal, setIsShowReviewModal] = useState(false)
-
-
-
-
-    const params = useParams()
-    console.log('params:', params)
-
+    const params = useParams();
+    
     useEffect(() => {
-        bookService.getNextBookId(params.bookId)
-            .then(setNextBookId)
-    }, [params.bookId])
-
-
-    useEffect(() => {
-        loadBook()
-    }, [params.bookId])
-
+        bookService.getNextBookId(params.bookId).then(setNextBookId);
+        loadBook();
+    }, [params.bookId]);
 
     function loadBook() {
         bookService.getById(params.bookId)
             .then(setBook)
-            .catch(err => {
-                console.log('BookDetails: err in loadBook', err)
-            })
+            .catch(err => console.log('BookDetails: err in loadBook', err));
     }
 
-    if (!book) return 'Loading...'
+    if (!book) return <p>Loading...</p>;
 
     const {
         title,
-        subtitle,
         thumbnail,
-        authors,
         description,
-        language,
-        categories,
-        listPrice,
         pageCount,
         publishedDate,
-
-    } = book
-
+        listPrice,
+        reviews = [] // Ensure reviews is always an array
+    } = book;
 
     function getPageCount() {
-        if (pageCount > 500) return 'Serious Reading'
-        if (pageCount > 200 && pageCount < 500) return 'Decent Reading'
-        if (pageCount > 100 && pageCount < 200) return 'Light Reading'
+        if (pageCount > 500) return 'Serious Reading';
+        if (pageCount > 200) return 'Decent Reading';
+        if (pageCount > 100) return 'Light Reading';
     }
 
     function getPublishedDate() {
-        const diffOfPublishedDate = new Date().getFullYear() - publishedDate
-        if (diffOfPublishedDate > 10) return 'Vintage Book'
-        if (diffOfPublishedDate < 1) return 'New!'
+        const diffOfPublishedDate = new Date().getFullYear() - publishedDate;
+        if (diffOfPublishedDate > 10) return 'Vintage Book';
+        if (diffOfPublishedDate < 1) return 'New!';
     }
 
     function getPriceColor() {
-        if (listPrice.amount > 150) return { color: "red", padding: "5px" }
-
-        if (listPrice.amount < 20) return { color: "green", padding: "5px" }
+        if (listPrice.amount > 150) return { color: "red", padding: "5px" };
+        if (listPrice.amount < 20) return { color: "green", padding: "5px" };
     }
+
     function onToggleReviewModal() {
-        setIsShowReviewModal((prevIsReviewModal) => !prevIsReviewModal)
+        setIsShowReviewModal(prev => !prev);
     }
 
     function onSaveReview(reviewToAdd) {
-        setIsLoadingReview(true)
+        setIsLoadingReview(true);
+    
         reviewService.saveReview(book.id, reviewToAdd)
-            .then((review => {
+            .then(review => {
                 setBook(prevBook => {
-                    const reviews = [review, ...prevBook.reviews]
+                    const reviews = prevBook.reviews ? [review, ...prevBook.reviews] : [review]
                     return { ...prevBook, reviews }
                 })
-            }))
-            .catch(() => showErrorMsg(`Review to ${book.title} Failed!`))
-            .finally(() => setIsLoadingReview(false))
+            })
+            .catch(err => {
+                console.error(`Review for ${book.title} Failed!`, err);
+            })
+            .finally(() => setIsLoadingReview(false));
     }
+    
+
     function onRemoveReview(reviewId) {
-        setIsLoadingReview(true)
+        setIsLoadingReview(true);
         reviewService.removeReview(book.id, reviewId)
             .then(() => {
-                setBook(prevBook => {
-                    const filteredReviews = prevBook.reviews.filter(review => review.id !== reviewId)
-                    return { ...prevBook, reviews: filteredReviews }
-                })
+                setBook(prevBook => ({
+                    ...prevBook,
+                    reviews: prevBook.reviews.filter(review => review.id !== reviewId)
+                }));
             })
-            .finally(() => setIsLoadingReview(false))
+            .finally(() => setIsLoadingReview(false));
     }
 
     return (
@@ -110,19 +95,22 @@ export function BookDetails() {
             <div className="book-details-header">
                 <h1>{title}</h1>
             </div>
+
             {listPrice.isOnSale && <div className="book-details-on-sale">On-sale!</div>}
 
             <div className="book-details-info">
-                <span>Book Pages : {pageCount} - ({getPageCount()})</span>
-                <span>Published Date : {publishedDate} - ({getPublishedDate()})</span>
+                <span>Book Pages: {pageCount} - ({getPageCount()})</span>
+                <span>Published Date: {publishedDate} - ({getPublishedDate()})</span>
                 <span style={getPriceColor()}>
                     Price: {listPrice.amount} {listPrice.currencyCode}
                 </span>
 
-                <span>Description :</span>
+                <span>Description:</span>
                 <LongTxt txt={description || ''} />
+
                 <hr className='brake-line' />
                 <button onClick={onToggleReviewModal}>Add Review</button>
+
                 {isShowReviewModal && (
                     <AddReview
                         toggleReview={onToggleReviewModal}
@@ -131,21 +119,24 @@ export function BookDetails() {
                 )}
             </div>
 
-
+            <div className='review-container'>
+                {!isLoadingReview ? (
+                    <ReviewList reviews={reviews} onRemoveReview={onRemoveReview} />
+                ) : (
+                    <div className="loader"></div>
+                )}
+            </div>
 
             <div className="book-details-image">
-                <img src={thumbnail} />
+                <img src={thumbnail} alt={title} />
             </div>
+
             <div className="buttons">
                 <button><Link to="/bookIndex">Back</Link></button>
                 <button>
                     {nextBookId && <Link to={`/bookIndex/${nextBookId}`}>Next Book</Link>}
                 </button>
-
-
-
             </div>
-
         </section>
-    )
+    );
 }

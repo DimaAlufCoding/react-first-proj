@@ -1,5 +1,10 @@
+export const utilService = {
+    makeId,
 
-export function makeId(length = 6) {
+}
+
+
+ function makeId(length = 6) {
     var txt = ''
     var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
 
